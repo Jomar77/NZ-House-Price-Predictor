@@ -1,14 +1,16 @@
 from bs4 import BeautifulSoup
 import requests
 
-url = "https://www.realestate.co.nz/residential/sale/canterbury/ashburton?maxp=500000&minba=1&minbe=2&mincp=1&minp=400000"
+url = "https://www.oneroof.co.nz/search/houses-for-sale/district_ashburton-canterbury-281_bedroom_3,4_price-to_500000_order_lowest-price-2_page_1"
 page = requests.get(url)
+print(page.status_code)
 
 soup = BeautifulSoup(page.content, 'html.parser')
-lists = soup.find_all('div', class_='tile--body')
+lists = soup.find_all('div', class_='house-feature-wrap')
 
 for list in lists:
-    title = list.find('h3', class_='h-6')
-    location = list.find('h3', class_='mb-1')
-    bedroom = list.find('div', ='bathroom')
-    bathroom = list.find('div', class_='price')
+    price = list.find('div', class_='price')
+    location = list.find('div', class_='address')
+    bedroom = list.find('div', class_='other')
+    info = [ location, price, bedroom]
+    print(info)
