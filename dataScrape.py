@@ -1,16 +1,30 @@
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
+location = []
+price = []
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "DNT": "1",
+    "Connection": "close",
+    "Upgrade-Insecure-Requests": "1",
+}
 
-url = "https://www.oneroof.co.nz/search/houses-for-sale/district_ashburton-canterbury-281_bedroom_3,4_price-to_500000_order_lowest-price-2_page_1"
-page = requests.get(url)
-print(page.status_code)
+cookies = {'session': '17ab96bd8ffbe8ca58a78657a918558'}
+r = requests.get(
+    "https://homes.co.nz/map/ashburton/ashburton?searchLoc=no%7DjGwwfw_@&view=list",
+    headers=headers,
+    cookies =cookies
+)
+soup = BeautifulSoup(r.content, "lxml")
+for d in soup.select(".ng-star-inserted .address"):
+    name=d.find('div')
+    if name is not None:
+        location.append(name.text)
+    else:
+        location.append("-")
 
-soup = BeautifulSoup(page.content, 'html.parser')
-lists = soup.find_all('div', class_='house-feature-wrap')
-
-for list in lists:
-    price = list.find('div', class_='price')
-    location = list.find('div', class_='address')
-    bedroom = list.find('div', class_='other')
-    info = [ location, price, bedroom]
-    print(info)
+df = pd.DataFrame({'Product Name':location})
+print(df)
